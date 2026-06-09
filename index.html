@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Creek Density · Indian Sundarban</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000000;
+            font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+            color: #eef4ff;
+            padding: 2rem 2rem 3rem;
+            line-height: 1.5;
+        }
+
+        .main-wrapper {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* heading */
+        .main-heading {
+            font-size: 2.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #b8e1fc, #6fb3e0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            border-left: 6px solid #2c7cb6;
+            padding-left: 1.3rem;
+            margin-bottom: 1.2rem;
+        }
+
+        /* abstract section */
+        .abstract-section {
+            margin: 1rem 0 2.5rem 0;
+            background: #11161c;
+            border-radius: 28px;
+            padding: 1.4rem 2rem;
+            border: 1px solid #2a4a6a;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+        .abstract-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #9ad4f0;
+            border-left: 4px solid #2c7cb6;
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+        }
+        .abstract-text {
+            font-size: 1rem;
+            color: #cddfe7;
+            text-align: justify;
+        }
+
+        /* two column layout for maps */
+        .viz-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+        .viz-card {
+            flex: 1;
+            min-width: 320px;
+            background: #0e1118;
+            border-radius: 28px;
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.6);
+            border: 1px solid #2a4a6a;
+            transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .viz-card:hover {
+            transform: translateY(-5px);
+            border-color: #4a9ad0;
+            box-shadow: 0 25px 40px -14px black;
+        }
+
+        /* button wrapper */
+        .btn-wrapper {
+            padding: 1rem 1.2rem 0.6rem 1.2rem;
+            background: #05080c;
+            border-bottom: 1px solid #1f3a48;
+            position: relative;
+        }
+        .year-btn {
+            background: #111a20;
+            border: 1px solid #2c6e96;
+            color: #e2f0ff;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 0.55rem 1.6rem;
+            border-radius: 48px;
+            cursor: pointer;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .year-btn:hover {
+            background: #1e3c4e;
+            border-color: #5aa9dd;
+            transform: scale(0.97);
+        }
+
+        /* dropdown menu */
+        .custom-dropdown {
+            position: absolute;
+            top: calc(100% - 6px);
+            left: 1.2rem;
+            background: #0e1a24;
+            backdrop-filter: blur(16px);
+            background-color: rgba(8, 16, 24, 0.98);
+            border: 1px solid #2a6e96;
+            border-radius: 20px;
+            min-width: 160px;
+            z-index: 200;
+            box-shadow: 0 18px 28px -10px black;
+            overflow: hidden;
+            animation: fadeSlideDown 0.18s ease;
+        }
+        @keyframes fadeSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .dropdown-option {
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #dcf0fa;
+            cursor: pointer;
+            transition: background 0.1s;
+            border-bottom: 1px solid #1e4054;
+        }
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+        .dropdown-option:hover {
+            background: #2a5a78;
+            padding-left: 24px;
+        }
+
+        /* iframe container */
+        .iframe-container {
+            width: 100%;
+            background: #010101;
+            overflow: hidden;
+        }
+        .map-iframe {
+            width: 100%;
+            height: 550px;
+            border: none;
+            display: block;
+            background: #111;
+            transition: opacity 0.2s;
+        }
+        .iframe-note {
+            font-size: 0.75rem;
+            color: #6d9ebd;
+            text-align: center;
+            padding: 0.5rem;
+            background: #030608;
+            border-top: 1px solid #1e4050;
+        }
+
+        @media (max-width: 850px) {
+            body { padding: 1rem; }
+            .map-iframe { height: 400px; }
+        }
+        @media (max-width: 720px) {
+            .viz-grid { flex-direction: column; gap: 1.5rem; }
+        }
+
+        footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #5c8aa8;
+            border-top: 1px solid #1e3a48;
+            padding-top: 1.5rem;
+        }
+        ::-webkit-scrollbar { width: 6px; background: #101010; }
+        ::-webkit-scrollbar-thumb { background: #2f6e8c; border-radius: 8px; }
+    </style>
+</head>
+<body>
+<div class="main-wrapper">
+    <h1 class="main-heading">CREEK DENSITY OF INDIAN SUNDARBAN</h1>
+
+    <div class="abstract-section">
+        <div class="abstract-title">📄 ABSTRACT</div>
+        <div class="abstract-text">
+            Creek density is a vital geomorphological indicator in the Sundarban delta, influencing tidal dynamics, 
+            sediment transport, and mangrove health. This study analyses multi‑temporal creek networks using 
+            satellite imagery (1991–2022) to quantify changes in drainage density and sinuosity. The interactive 
+            maps below, generated via QGIS2Web, allow visual comparison of creek density across different decades. 
+            Each viewer has a YEAR button to load the corresponding creek density map.
+        </div>
+    </div>
+
+    <!-- TWO VISUALIZATION BOXES (left and right) -->
+    <div class="viz-grid">
+        <!-- LEFT MAP VIEWER -->
+        <div class="viz-card">
+            <div class="btn-wrapper" id="leftBtnWrapper">
+                <button class="year-btn" id="yearBtnLeft">📅 YEAR</button>
+            </div>
+            <div class="iframe-container">
+                <iframe id="iframeLeft" class="map-iframe" src="https://sayantan11072002.github.io/CREEK-DENSITY-1991/" title="Creek Density Left Map" loading="eager"></iframe>
+                <div class="iframe-note">📌 Left viewer </div>
+            </div>
+        </div>
+
+        <!-- RIGHT MAP VIEWER -->
+        <div class="viz-card">
+            <div class="btn-wrapper" id="rightBtnWrapper">
+                <button class="year-btn" id="yearBtnRight">📅 YEAR</button>
+            </div>
+            <div class="iframe-container">
+                <iframe id="iframeRight" class="map-iframe" src="https://sayantan11072002.github.io/CREEK-DENSITY-2001/" title="Creek Density Right Map" loading="eager"></iframe>
+                <div class="iframe-note">📌 Right viewer </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        ⚡ Creek density maps · QGIS2Web output · Select year to compare spatiotemporal changes
+    </footer>
+</div>
+
+<script>
+    // ----- URL MAPPING for each year (based on user's links) -----
+    const creekMapUrls = {
+        "1991": "https://sayantan11072002.github.io/CREEK-DENSITY-1991/",
+        "2001": "https://sayantan11072002.github.io/CREEK-DENSITY-2001/",
+        "2009": "https://sayantan11072002.github.io/CREEK-DENSITY-2009/",
+        "2011": "https://sayantan11072002.github.io/CREEK-DENSITY-2011/",
+        "2018": "https://sayantan11072002.github.io/CREEK-DENSITY-WEB-2018/",
+        "2019": "https://sayantan11072002.github.io/CREEK-DENSITY-2019/",
+        "2020": "https://sayantan11072002.github.io/CREEK-DENSITY-2020/",
+        "2021": "https://sayantan11072002.github.io/CREEK-DENSITY-WEB-2021/",
+        "2022": "https://sayantan11072002.github.io/CREEKDENSITY-2022/"
+    };
+
+    const yearOptions = ["1991", "2001", "2009", "2011", "2018", "2019", "2020", "2021", "2022"];
+
+    // ----- DROPDOWN MANAGEMENT (reusable) -----
+    let activeDropdown = null;
+    let activeButton = null;
+
+    function closeCurrentDropdown() {
+        if (activeDropdown && activeDropdown.parentNode) {
+            activeDropdown.remove();
+        }
+        activeDropdown = null;
+        activeButton = null;
+    }
+
+    function showDropdown(buttonElement, onSelectCallback) {
+        if (activeButton === buttonElement && activeDropdown) {
+            closeCurrentDropdown();
+            return;
+        }
+        closeCurrentDropdown();
+
+        const wrapper = buttonElement.closest('.btn-wrapper');
+        if (!wrapper) return;
+
+        const dropdownDiv = document.createElement('div');
+        dropdownDiv.className = 'custom-dropdown';
+
+        yearOptions.forEach(year => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'dropdown-option';
+            optionDiv.textContent = year;
+            // optional: add subtle style for current year
+            optionDiv.addEventListener('click', (e) => {
+                e.stopPropagation();
+                onSelectCallback(year);
+                closeCurrentDropdown();
+            });
+            dropdownDiv.appendChild(optionDiv);
+        });
+
+        wrapper.style.position = 'relative';
+        wrapper.appendChild(dropdownDiv);
+        activeDropdown = dropdownDiv;
+        activeButton = buttonElement;
+
+        // click outside to close
+        const outsideClickListener = (event) => {
+            if (activeDropdown && !activeDropdown.contains(event.target) && event.target !== buttonElement && !buttonElement.contains(event.target)) {
+                closeCurrentDropdown();
+                document.removeEventListener('click', outsideClickListener);
+            }
+        };
+        setTimeout(() => {
+            document.addEventListener('click', outsideClickListener);
+        }, 10);
+    }
+
+    // ----- IFRAME UPDATE with loading feedback -----
+    function updateIframe(iframeElement, newUrl) {
+        if (!iframeElement) return;
+        iframeElement.style.opacity = '0.6';
+        setTimeout(() => {
+            iframeElement.src = newUrl;
+            iframeElement.onload = () => {
+                iframeElement.style.opacity = '1';
+                iframeElement.onload = null;
+            };
+            setTimeout(() => {
+                if (iframeElement.style.opacity === '0.6') iframeElement.style.opacity = '1';
+            }, 1500);
+        }, 40);
+    }
+
+    // ----- GET URL FOR SELECTED YEAR -----
+    function getCreekUrl(year) {
+        return creekMapUrls[year] || null;
+    }
+
+    // ----- INITIALIZE BUTTONS -----
+    const leftIframe = document.getElementById('iframeLeft');
+    const rightIframe = document.getElementById('iframeRight');
+    const leftBtn = document.getElementById('yearBtnLeft');
+    const rightBtn = document.getElementById('yearBtnRight');
+
+    leftBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        showDropdown(leftBtn, (selectedYear) => {
+            const url = getCreekUrl(selectedYear);
+            if (url) {
+                updateIframe(leftIframe, url);
+                // optional: update button text to show selected year
+                leftBtn.innerHTML = `📅 ${selectedYear}`;
+            } else {
+                console.warn(`No URL found for year ${selectedYear}`);
+            }
+        });
+    });
+
+    rightBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        showDropdown(rightBtn, (selectedYear) => {
+            const url = getCreekUrl(selectedYear);
+            if (url) {
+                updateIframe(rightIframe, url);
+                rightBtn.innerHTML = `📅 ${selectedYear}`;
+            } else {
+                console.warn(`No URL found for year ${selectedYear}`);
+            }
+        });
+    });
+
+    // Fallback error handling for iframes
+    const handleIframeError = (iframe) => {
+        iframe.onerror = () => console.log("Map load issue – ensure link is accessible");
+    };
+    handleIframeError(leftIframe);
+    handleIframeError(rightIframe);
+</script>
+</body>
+</html>
